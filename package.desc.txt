@@ -1,0 +1,18 @@
+{ Description of current package JSON
+  
+  "name": "hello-ts",
+  
+  "license": "NOLICENSE",
+  
+  //Dev dependency which is only typescript currently
+  "devDependencies": {
+    "typescript": "^4.3.2"
+  },
+
+  //Dev Script which runs when you run npm or yarn from the current directory. 
+  //Running "Dev" will run typescript compiler on watch mode which will be always watching for changes in code and recompile
+  //--preserveWatchOutput makes that your consoles outputs will be preserved
+  "scripts": {
+    "dev": "tsc --watch --preserveWatchOutput"
+  }
+}
