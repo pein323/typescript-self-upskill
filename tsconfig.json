@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "outDir": "dist", // where to put the TS files
-    "target": "ES2022" // which level of JS support to target
+    "target": "ES2022", // which level of JS support to target
+    "strictNullChecks": true
   },
   "include": ["src"] // which files to compile
 }

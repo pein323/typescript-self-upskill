@@ -262,64 +262,112 @@ class Car5 extends Base {
 /**
  * Top and Bottom Types
  */
-//A top type (symbol: ⊤) is a type that describes any possible value allowed by the system. 
+//A top type (symbol: ⊤) is a type that describes any possible value allowed by the system.
 //To use our set theory mental model, we could describe this as {x| x could be anything }
 
 //Top Type Any - risk of runtimes error (no type safety)
-let flexible: any = 4
-flexible = "Download some more ram"
-flexible = window.document
-flexible = setTimeout
+let flexible: any = 4;
+flexible = "Download some more ram";
+flexible = window.document;
+flexible = setTimeout;
 
 //Top Type Unknown - you can assign the value but cannot accesss to it directly (need to check or cast as specified type)
-let myUnknown: unknown = 14
-myUnknown.it.is.possible.to.access.any.deep.property
+let myUnknown: unknown = 14;
+myUnknown.it.is.possible.to.access.any.deep.property;
 //'myUnknown' is of type 'unknown'.
-          
+
 // This code runs for { myUnknown| anything }
 if (typeof myUnknown === "string") {
   // This code runs for { myUnknown| all strings }
-  console.log(myUnknown, "is a string")
-                 
+  console.log(myUnknown, "is a string");
 } else if (typeof myUnknown === "number") {
   // This code runs for { myUnknown| all numbers }
-  console.log(myUnknown, "is a number")
-                 
+  console.log(myUnknown, "is a number");
 } else {
   // this would run for "the leftovers"
   //       { myUnknown| anything except string or numbers }
 }
 
-//A bottom type (symbol: ⊥) is a type that describes no possible value allowed by the system. 
+function doSomethingRisky() {
+  if (Math.random() > 0.5) return "ok";
+  else if (Math.random() > 0.5) throw new Error("Bad luck!");
+  else throw "Really bad luck";
+}
+
+try {
+  doSomethingRisky();
+} catch (e: unknown) {
+  if (e instanceof Error) {
+    e;
+  } else if (typeof e === "string") {
+    e;
+  } else {
+    // Last resort
+    console.error(e);
+  }
+}
+
+// ALMOST TOP TYPE - Object
+//The object type represents the set { all possible values except for primitives }.
+//Primitive value types in JavaScript are { string, number, boolean, Symbol, null, undefined, BigInt }
+//((IN TS WHEN STRICKTnULLcHECKS IS SET TO FALSE THEN NULL VALUES CAN BE ASSIGNED AS AN OBJECT))
+let val: object = { status: "ok" };
+val = "foo";
+val = null;
+val = () => "ok";
+
+// The type of this value cannot be modeled by an interface
+let response:
+  | { success: string; data: unknown }
+  | { error: string; code: number } = { success: "ok", data: [] };
+
+val = response;
+
+// ALMOST TOP TYPE - {}
+const stringOrNumber: string | number = 4;
+let nullableString: string | null = null;
+const myObj: {
+  a?: number;
+  b: string;
+} = { b: "foo" };
+
+let val2: {} = 4;
+val2 = "abc";
+val2 = new Date();
+val2 = stringOrNumber;
+val2 = nullableString; //error - null
+val2 = myObj.a; //error cause of possible undefined
+
+//A bottom type (symbol: ⊥) is a type that describes no possible value allowed by the system.
 //To use our set theory mental model, we could describe this as “any value from the following set: { } (intentionally empty)”
 //Exhaustive conditionals:
 class Car11 {
   drive() {
-    console.log("vroom")
+    console.log("vroom");
   }
 }
 class Truck11 {
   tow() {
-    console.log("dragging something")
+    console.log("dragging something");
   }
 }
 class Boat {
   isFloating() {
-    return true
+    return true;
   }
 }
-type Vehicle = Truck | Car | Boat
- 
-let myVehicle: Vehicle = obtainRandomVehicle()
- 
+type Vehicle = Truck | Car | Boat;
+
+let myVehicle: Vehicle = obtainRandomVehicle();
+
 // The exhaustive conditional
 if (myVehicle instanceof Truck11) {
-  myVehicle.tow() // Truck
+  myVehicle.tow(); // Truck
 } else if (myVehicle instanceof Car11) {
-  myVehicle.drive() // Car
+  myVehicle.drive(); // Car
 } else {
   // NEITHER!
-  const neverValue: never = myVehicle
+  const neverValue: never = myVehicle;
   //Type 'Boat' is not assignable to type 'never'.
 }
 
@@ -328,17 +376,15 @@ if (myVehicle instanceof Truck11) {
  */
 
 interface CarLike {
-  make: string
-  model: string
-  year: number
+  make: string;
+  model: string;
+  year: number;
 }
- 
-let maybeCar: unknown
+
+let maybeCar: unknown;
 
 // the guard
-function isCarLike(
-  valueToTest: any
-): valueToTest is CarLike {
+function isCarLike(valueToTest: any): valueToTest is CarLike {
   return (
     valueToTest &&
     typeof valueToTest === "object" &&
@@ -348,15 +394,11 @@ function isCarLike(
     typeof valueToTest["model"] === "string" &&
     "year" in valueToTest &&
     typeof valueToTest["year"] === "number"
-  )
+  );
 }
 
-
- 
 // the guard
-function assertsIsCarLike(
-  valueToTest: any
-): asserts valueToTest is CarLike {
+function assertsIsCarLike(valueToTest: any): asserts valueToTest is CarLike {
   if (
     !(
       valueToTest &&
@@ -369,20 +411,299 @@ function assertsIsCarLike(
       typeof valueToTest["year"] === "number"
     )
   )
-    throw new Error(
-      `Value does not appear to be a CarLike${valueToTest}`
-    )
+    throw new Error(`Value does not appear to be a CarLike${valueToTest}`);
 }
 
 if (isCarLike(maybeCar)) {
-  maybeCar
+  maybeCar;
   //let maybeCar: CarLike
 }
- 
+
 // using the guard
-maybeCar
+maybeCar;
 //let maybeCar: unknown
 
-assertsIsCarLike(maybeCar)
-maybeCar   
+assertsIsCarLike(maybeCar);
+maybeCar;
 //let maybeCar: CarLike
+
+/**
+ * Generics
+ */
+function listToDict<T>(
+  list: T[],
+  idGen: (arg: T) => string
+): { [k: string]: T } {
+  const dict: { [k: string]: T } = {};
+
+  list.forEach((element) => {
+    const dictKey = idGen(element);
+    dict[dictKey] = element;
+  });
+
+  return dict;
+}
+
+const dict1 = listToDict(
+  [{ name: "Mike" }, { name: "Mark" }],
+  (item) => item.name
+);
+
+const phoneList = [
+  { customerId: "0001", areaCode: "321", num: "123-4566" },
+  { customerId: "0002", areaCode: "174", num: "142-3626" },
+  { customerId: "0003", areaCode: "192", num: "012-7190" },
+  { customerId: "0005", areaCode: "402", num: "652-5782" },
+  { customerId: "0004", areaCode: "301", num: "184-8501" },
+];
+
+const dict2 = listToDict(phoneList, (p) => p.customerId);
+
+/**
+ * Dictionary map, reduce, filter
+ */
+
+const fruits = {
+  apple: { color: "red", mass: 100 },
+  grape: { color: "red", mass: 5 },
+  banana: { color: "yellow", mass: 183 },
+  lemon: { color: "yellow", mass: 80 },
+  pear: { color: "green", mass: 178 },
+  orange: { color: "orange", mass: 262 },
+  raspberry: { color: "red", mass: 4 },
+  cherry: { color: "red", mass: 5 },
+};
+
+interface Dict<T> {
+  [k: string]: T;
+}
+
+// Array.prototype.map, but for Dict
+function mapDict<T, U>(
+  input: Dict<T>,
+  mapping: (arg: T, key: string) => U
+): Dict<U> {
+  const toReturn: Dict<U> = {};
+
+  for (let key in input) {
+    const thisVal = input[key];
+    toReturn[key] = mapping(thisVal, key);
+  }
+
+  return toReturn;
+}
+// Array.prototype.filter, but for Dict
+function filterDict<T>(input: Dict<T>, filter: (arg: T) => boolean): Dict<T> {
+  const toReturn: Dict<T> = {};
+
+  for (let key in input) {
+    const thisVal = input[key];
+    if (filter(thisVal)) {
+      toReturn[key] = thisVal;
+    }
+  }
+
+  return toReturn;
+}
+// Array.prototype.reduce, but for Dict
+function reduceDict<T, V>(
+  input: Dict<T>,
+  reducer: (currentValue: V, item: T) => V,
+  initialValue: V
+): V {
+  let valToReturn = initialValue;
+
+  for (let key in input) {
+    const thisVal = input[key];
+    valToReturn = reducer(valToReturn, thisVal);
+  }
+
+  return valToReturn;
+}
+
+// MAP
+const fruitsWithKgMass = mapDict(fruits, (fruit, name) => ({
+  ...fruit,
+  kg: 0.001 * fruit.mass,
+  name,
+}));
+
+// FILTER
+// only red fruits
+const redFruits = filterDict(fruits, (fruit) => fruit.color === "red");
+
+// REDUCE
+// If we had one of each fruit, how much would the total mass be?
+const oneOfEachFruitMass = reduceDict(
+  fruits,
+  (currentMass, fruit) => currentMass + fruit.mass,
+  0
+);
+
+/**
+ * Extract utility
+ */
+
+type FavoriteColors =
+  | "dark sienna"
+  | "van dyke brown"
+  | "yellow ochre"
+  | "sap green"
+  | "titanium white"
+  | "phthalo green"
+  | "prussian blue"
+  | "cadium yellow"
+  | [number, number, number]
+  | { red: number; green: number; blue: number };
+
+type StringColors = Extract<FavoriteColors, string>;
+
+type ObjectColors = Extract<FavoriteColors, { red: number }>;
+
+type TupleColors = Extract<FavoriteColors, [number, number, number]>;
+
+//EXclude
+type NonStringColors = Exclude<FavoriteColors, string>;
+
+/**
+ * Covariance and contravariance
+ */
+class Snack {
+  protected constructor(public readonly petFriendly: boolean) {}
+}
+
+class Pretzel extends Snack {
+  constructor(public readonly salted = true) {
+    super(!salted);
+  }
+}
+
+class Cookie extends Snack {
+  public readonly petFriendly: false = false;
+  constructor(public readonly chocolateType: "dark" | "milk" | "white") {
+    super(false);
+  }
+}
+
+//Covariance - from sub to base
+interface Producer<T> {
+  produce: () => T;
+}
+//or
+interface Producer<out T> {
+  produce: () => T;
+}
+
+let cookieProducer: Producer<Cookie> = {
+  produce: () => new Cookie("dark"),
+};
+
+const COOKIE_TO_PRETZEL_RATIO = 0.5;
+
+let snackProducer: Producer<Snack> = {
+  produce: () =>
+    Math.random() > COOKIE_TO_PRETZEL_RATIO
+      ? new Cookie("milk")
+      : new Pretzel(true),
+};
+
+snackProducer = cookieProducer; // ✅
+cookieProducer = snackProducer; // ❌
+
+//Cookie	          --- is a --->	  Snack
+//Producer<Cookie>	--- is a --->	  Producer<Snack>
+
+//contravariance - from base to sub
+interface Packager<T> {
+  package: (item: T) => void;
+}
+//or
+interface Packager<in T> {
+  package: (item: T) => void;
+}
+
+let cookiePackager: Packager<Cookie> = {
+  package(item: Cookie) {},
+};
+
+let snackPackager: Packager<Snack> = {
+  package(item: Snack) {
+    if (item instanceof Cookie) {
+      /* Package cookie */
+    } else if (item instanceof Pretzel) {
+      /* Package pretzel */
+    } else {
+      /* Package other snacks? */
+    }
+  },
+};
+
+cookiePackager = snackPackager;
+snackPackager = cookiePackager;
+
+//Cookie	           --- is a --->	  Snack
+//Packager<Cookie>	<--- is a ---	    Packager<Snack>
+
+//Invariance
+interface ProducerPackager<T> {
+  package: (item: T) => void;
+  produce: () => T;
+}
+
+let cookieProducerPackager: ProducerPackager<Cookie> = {
+  produce() {
+    return new Cookie("dark");
+  },
+  package(arg: Cookie) {},
+};
+
+let snackProducerPackager: ProducerPackager<Snack> = {
+  produce() {
+    return Math.random() > 0.5 ? new Cookie("milk") : new Pretzel(true);
+  },
+  package(item: Snack) {
+    if (item instanceof Cookie) {
+      /* Package cookie */
+    } else if (item instanceof Pretzel) {
+      /* Package pretzel */
+    } else {
+      /* Package other snacks? */
+    }
+  },
+};
+
+//Cookie	                  --- is a --->	      Snack
+//ProducerPackager<Cookie>	x x x x x x	        ProducerPackager<Snack>
+
+//Bivariance (not desirable)
+function cookieQualityCheck(cookie: Cookie): boolean {
+  return Math.random() > 0.1;
+}
+
+function snackQualityCheck(snack: Snack): boolean {
+  if (snack instanceof Cookie) return cookieQualityCheck(snack);
+  else return Math.random() > 0.16; // pretzel case
+}
+
+// A function type for preparing a bunch of food items
+// for shipment. The function must be passed a callback
+// that will be used to check the quality of each item.
+type PrepareFoodPackage<T> = (
+  uncheckedItems: T[],
+  qualityCheck: (arg: T) => boolean
+) => T[];
+
+// Prepare a bunch of snacks for shipment
+let prepareSnacks: PrepareFoodPackage<Snack> = (uncheckedItems, callback) =>
+  uncheckedItems.filter(callback);
+
+// Prepare a bunch of cookies for shipment
+let prepareCookies: PrepareFoodPackage<Cookie> = (uncheckedItems, callback) =>
+  uncheckedItems.filter(callback);
+
+const cookies = [new Cookie("dark"), new Cookie("milk"), new Cookie("white")];
+const snacks = [new Pretzel(true), new Cookie("milk"), new Cookie("white")];
+//Below works when strictFunctionTypes = false
+prepareSnacks(cookies, cookieQualityCheck);
+prepareSnacks(snacks, cookieQualityCheck);
+prepareCookies(cookies, snackQualityCheck);
