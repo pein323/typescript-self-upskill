@@ -15,7 +15,13 @@ export type DataEntityMap = {
 
 export type DataStoreMethods = {
     [K in keyof DataEntityMap as `getAll${Capitalize<K>}s`] : () => DataEntityMap[K][];
-}
+} & {
+    [K in keyof DataEntityMap as `get${Capitalize<K>}`] : (id: string) => DataEntityMap[K];
+} 
+& {
+    [K in keyof DataEntityMap as `clear${Capitalize<K>}s`] : () => DataEntityMap[K][];
+} 
+
 
 export class DataStore implements DataStoreMethods {
     getAllMovies: () => Movie[];
