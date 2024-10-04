@@ -13,20 +13,17 @@ export type DataEntityMap = {
   song: Song;
 };
 
-export class DataStore {
-  addSong: ({ id, singer }: { id: any; singer: any }) => void;
-  getSong: (id: string) => Song;
-  getAllSongs: () => Song[];
-  clearSongs: () => void;
-  addMovie: ({ id, director }: { id: any; director: any }) => void;
-  getMovie: (id: string) => Movie;
-  getAllMovies: () => Movie[];
-  clearMovies: () => void;
-
-  director: string;
-  id: string;
-  singer: string;
+export type DataStoreMethods = {
+    [K in keyof DataEntityMap as `getAll${Capitalize<K>}s`] : () => DataEntityMap[K][];
 }
+
+export class DataStore implements DataStoreMethods {
+    getAllMovies: () => Movie[];
+    getAllSongs: () => Song[];
+
+}
+
+const temp: DataStoreMethods = {} as any;
 
 const ds = new DataStore();
 ds.addSong({ id: "song-123", singer: "The Flaming Lips" });
