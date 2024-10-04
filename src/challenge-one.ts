@@ -3,18 +3,9 @@ export interface DataEntity {
 }
 export interface Movie extends DataEntity {
   director: string;
-  addMovie: ({ id, director }) => void;
-  getMovie: (id: string) => Movie;
-  getAllMovies: () => Movie[];
-  clearMovies: () => void;
 }
 export interface Song extends DataEntity {
   singer: string;
-
-  addSong: ({ id, singer }) => void;
-  getSong: (id: string) => Song;
-  getAllSongs: () => Song[];
-  clearSongs: () => void;
 }
 
 export type DataEntityMap = {
@@ -22,7 +13,7 @@ export type DataEntityMap = {
   song: Song;
 };
 
-export class DataStore implements Movie, Song {
+export class DataStore {
   addSong: ({ id, singer }: { id: any; singer: any }) => void;
   getSong: (id: string) => Song;
   getAllSongs: () => Song[];
