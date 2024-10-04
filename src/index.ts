@@ -707,3 +707,32 @@ const snacks = [new Pretzel(true), new Cookie("milk"), new Cookie("white")];
 prepareSnacks(cookies, cookieQualityCheck);
 prepareSnacks(snacks, cookieQualityCheck);
 prepareCookies(cookies, snackQualityCheck);
+
+/**
+ * Template literal types
+ */
+
+type Statistics = {
+  [K in `${"median" | "mean"}Value`]?: number;
+};
+const stats: Statistics = {};
+stats.meanValue;
+stats.medianValue;
+
+let winFns: Extract<keyof Window, `set${any}`> = "" as any;
+type T1 = `send${Capitalize<"mouse" | "keyboard">}Event`;
+type T2 = `send${Uppercase<"mouse" | "keyboard">}Event`;
+type T3 = `send${Lowercase<"Mouse" | "keyBoard">}Event`;
+
+/**
+ * Key remapping
+ */
+
+type Colors = "red" | "green" | "blue";
+type ColorSelector = {
+  [K in Colors as `select${Capitalize<K>}`]: () => void;
+};
+const cs: ColorSelector = {} as any;
+cs.selectRed();
+cs.selectBlue();
+cs.selectGreen();

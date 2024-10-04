@@ -7,10 +7,16 @@ export interface Movie extends DataEntity {
 export interface Song extends DataEntity {
   singer: string;
 }
+//TEST Additional class
+
+// export interface Comic extends DataEntity {
+//     author: string;
+//   }
 
 export type DataEntityMap = {
   movie: Movie;
   song: Song;
+  //comic: Comic
 };
 
 export type DataStoreMethods = {
@@ -20,7 +26,9 @@ export type DataStoreMethods = {
     id: string
   ) => DataEntityMap[K];
 } & {
-  [K in keyof DataEntityMap as `add${Capitalize<K>}`]: () => void;
+  [K in keyof DataEntityMap as `add${Capitalize<K>}`]: (
+    arg: DataEntityMap[K]
+  ) => DataEntityMap[K];
 } & {
   [K in keyof DataEntityMap as `clear${Capitalize<K>}s`]: () => void;
 };
@@ -40,6 +48,15 @@ export class DataStore implements DataStoreMethods {
     movie: {},
     song: {},
   };
+
+  addMovie(movie: Movie): Movie {
+    this.#data.movie[movie.id] = movie;
+    return movie;
+  }
+  addSong(song: Song): Song {
+    this.#data.song[song.id] = song;
+    return song;
+  }
 
   getAllMovies(): Movie[] {
     return Object.keys(this.#data.movie)
@@ -61,8 +78,6 @@ export class DataStore implements DataStoreMethods {
     if (!song) throw new Error(`Could not find song with id ${songKey}`);
     return song;
   }
-  addMovie: () => void;
-  addSong: () => void;
   clearMovies(): void {
     this.#data.movie = {};
   }
