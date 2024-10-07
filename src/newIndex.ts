@@ -11,7 +11,7 @@ const banana: Fruit = {
 };
 
 // both of these things are exportable
-export { banana, Fruit };
+//export { banana, Fruit };
 
 function Fruit(kind: string) {
   switch (kind) {
@@ -29,4 +29,22 @@ namespace Fruit {
   }
 }
 
-export { Fruit };
+
+const is_a_value = 4
+type is_a_type = {}
+namespace is_a_namespace {
+  const foo = 17
+}
+ 
+// how to test for a (value | namespace)
+const x = is_a_value // the value position (RHS of =).
+              
+ 
+// how to test for a type
+const y: is_a_type = {} // the type position (LHS of =).
+            
+// how to test for a namespace (hover over is_a_namespace symbol)
+is_a_namespace
+
+
+export { banana, Fruit };

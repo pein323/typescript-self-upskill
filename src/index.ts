@@ -736,3 +736,14 @@ const cs: ColorSelector = {} as any;
 cs.selectRed();
 cs.selectBlue();
 cs.selectGreen();
+
+
+/**
+ * Checked index access
+ */
+type Dict10<T> = { [K: string]: T }
+type Dict10U<T> = { [K: string]: T | undefined }
+const d: Dict10<string[]> = {}
+const dd: Dict10U<string[]> = {}
+d.rhubarb.join(", ") // 💥
+dd.rhubarb.join(", ") 
