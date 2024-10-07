@@ -747,3 +747,6 @@ const d: Dict10<string[]> = {}
 const dd: Dict10U<string[]> = {}
 d.rhubarb.join(", ") // 💥
 dd.rhubarb.join(", ") 
+
+let aage =13
+aage = Number.NaN
